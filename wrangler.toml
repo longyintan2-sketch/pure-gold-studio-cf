@@ -1,0 +1,13 @@
+name = "pure-gold-studio"
+pages_build_output_dir = "./renderer"
+compatibility_date = "2024-09-23"
+
+# D1 数据库绑定（服务端强制权限 / 每日限额都靠它）
+[[d1_databases]]
+binding = "DB"
+database_name = "pure-gold-db"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+# 注意：SECRET（用于签名管理员会话 Cookie）请用命令设置，不要写进此文件：
+#   npx wrangler pages secret put SECRET --project-name pure-gold-studio
+# 不设置时 functions 会回退到 'dev-secret-change-me'（仅本地开发可用）。

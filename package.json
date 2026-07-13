@@ -1,0 +1,37 @@
+{
+  "name": "pure-gold-studio",
+  "version": "1.0.0",
+  "description": "纯金工坊 · 密钥登录 + 星币积分 + 歌曲生成扣费的独立桌面软件",
+  "main": "main.js",
+  "author": "Pure Gold Studio",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable --x64"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.puregold.studio",
+    "productName": "纯金工坊",
+    "sign": "./sign-noop.js",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*"
+    ],
+    "win": {
+      "target": [
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "portable": {
+      "artifactName": "纯金工坊-便携版-${version}.exe"
+    }
+  }
+}
