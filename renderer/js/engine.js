@@ -5,16 +5,16 @@
  * ============================================================ */
 
 export const CONTROLS = [
-  { key: 'throat',  name: '喉腔共振动态游离', unit: 'Hz', min: 20, max: 400, def: 120, group: '基础柔化' },
-  { key: 'sat',     name: '非对称磁带饱和',   unit: '%',  min: 0, max: 100, def: 28, group: '基础柔化' },
-  { key: 'rolloff', name: '高音滚降模拟',     unit: 'Hz', min: 4000, max: 20000, def: 9000, group: '基础柔化' },
-  { key: 'beat',    name: '混沌节拍漂移',     unit: 'ms', min: 0, max: 50, def: 18, group: '基础柔化' },
-  { key: 'vibrato', name: '自然颤音 Vibrato', unit: '%',  min: 0, max: 100, def: 25, group: '人声人化' },
-  { key: 'reverb',  name: '卷积混响空间感',   unit: '%',  min: 0, max: 100, def: 18, group: '人声人化' },
+  { key: 'throat',  name: '喉腔共振动态游离', unit: 'Hz', min: 20, max: 400, def: 100, group: '基础柔化' },
+  { key: 'sat',     name: '非对称磁带饱和',   unit: '%',  min: 0, max: 100, def: 22, group: '基础柔化' },
+  { key: 'rolloff', name: '高音滚降模拟',     unit: 'Hz', min: 4000, max: 20000, def: 13000, group: '基础柔化' },
+  { key: 'beat',    name: '混沌节拍漂移',     unit: 'ms', min: 0, max: 50, def: 12, group: '基础柔化' },
+  { key: 'vibrato', name: '自然颤音 Vibrato', unit: '%',  min: 0, max: 100, def: 0, group: '人声人化' },
+  { key: 'reverb',  name: '卷积混响空间感',   unit: '%',  min: 0, max: 100, def: 0, group: '人声人化' },
 ];
 
 export const PRESETS = {
-  recommend: { throat: 120, sat: 28, rolloff: 9000, beat: 18, vibrato: 25, reverb: 18 },
+  recommend: { throat: 100, sat: 22, rolloff: 13000, beat: 12, vibrato: 0, reverb: 0 },
   sleep:     { throat: 100, sat: 30, rolloff: 8000, beat: 25, vibrato: 30, reverb: 25 },
   podcast:   { throat: 120, sat: 25, rolloff: 11000, beat: 8, vibrato: 10, reverb: 8 },
   tape:      { throat: 90,  sat: 45, rolloff: 7000, beat: 22, vibrato: 15, reverb: 12 },

@@ -298,6 +298,7 @@ async function exportAllLogs() {
 
 /* ===================== 主界面：歌曲生成（扣费）===================== */
 let audioCtx = null, currentBuffer = null, sourceNode = null, currentGraph = null, analyser = null, playing = false, rafId = null;
+let currentFileName = '';
 const inputs = {};
 
 function renderMain() {
@@ -333,8 +334,9 @@ function renderMain() {
         <button class="preset" data-preset="tape">复古磁带</button>
         <button class="preset" data-preset="space">空间感</button>
         <button class="preset" data-preset="clear">清澈咬字</button>
+        <button class="optimize" id="defaultQBtn" title="恢复参考站默认音质参数">⚙️ 默认值（音质）</button>
       </div>
-      <div class="hint">默认即推荐值，可一键优化或自由拖动微调。</div>
+      <div class="hint">默认即推荐值，可一键优化、默认值（音质）或自由拖动微调。</div>
       <div id="controls"></div>
     </div>
   </div>`;
@@ -362,6 +364,7 @@ function clearPreset() { document.querySelectorAll('.preset').forEach(b => b.cla
 
 function bindEngine() {
   $('#optBtn').onclick = () => { applyPreset(PRESETS.recommend); clearPreset(); if (playing) restart(); };
+  $('#defaultQBtn').onclick = () => { applyPreset(PRESETS.recommend); clearPreset(); toast('已恢复默认音质参数', 'ok'); if (playing) restart(); };
   document.querySelectorAll('.preset').forEach(b => b.onclick = () => { applyPreset(PRESETS[b.dataset.preset]); clearPreset(); b.classList.add('active'); if (playing) restart(); });
   const drop = $('#drop');
   drop.onclick = () => { const i = document.createElement('input'); i.type = 'file'; i.accept = 'audio/*'; i.onchange = e => e.target.files[0] && loadFile(e.target.files[0]); i.click(); };
@@ -376,6 +379,7 @@ async function loadFile(f) {
     const arr = await f.arrayBuffer();
     audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
     currentBuffer = await audioCtx.decodeAudioData(arr);
+    currentFileName = f.name.replace(/\.[^/.]+$/, '');
     $('#fname').textContent = '✓ 已载入：' + f.name + ' （' + currentBuffer.duration.toFixed(1) + 's）';
     ['play', 'stop', 'gen'].forEach(id => $('#' + id).disabled = false);
   } catch { toast('无法解码该音频文件', 'err'); }
@@ -417,7 +421,8 @@ async function generate() {
     if (!r.ok) { toast(r.msg, 'err'); return; }
     $('#balance').textContent = r.balance;
     const url = URL.createObjectURL(blob), a = document.createElement('a');
-    a.href = url; a.download = '纯金工坊_歌曲_' + Date.now() + '.wav'; a.click();
+    const outName = (currentFileName || '纯金工坊_歌曲') + '-优化.wav';
+    a.href = url; a.download = outName; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1500);
     toast(`生成成功，已扣 ${r.cost} 星币，剩余 ★ ${r.balance}`, 'ok');
   } catch (e) { toast('生成失败：' + (e.message || e), 'err'); }
