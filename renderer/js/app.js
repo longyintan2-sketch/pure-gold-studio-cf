@@ -67,7 +67,7 @@ function renderAdminLogin() {
       <div class="logo-sub">ADMIN ACCESS</div>
       <div class="field">
         <label>管理员账号（邮箱）</label>
-        <input id="email" placeholder="如 ${esc(SUPER_ADMIN)}" autocomplete="off">
+        <input id="email" placeholder="请输入管理员账号" autocomplete="off">
       </div>
       <div class="field">
         <label>密码</label>
