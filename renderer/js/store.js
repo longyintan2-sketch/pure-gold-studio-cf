@@ -130,7 +130,6 @@ class LocalStore {
     this.keys[k] = {
       key: k,
       stars: RULES.GIFT_ON_CREATE,
-      silver: 0,
       note: note || '',
       createdBy: cur.email,
       createdAt: Date.now(),
@@ -160,45 +159,30 @@ class LocalStore {
     const cur = this.adminSession();
     if (!cur) return { ok: false, msg: '请先登录管理后台' };
     amount = Math.floor(Number(amount));
-    if (!amount || amount <= 0) return { ok: false, msg: '请输入有效银币数' };
+    if (!amount || amount <= 0) return { ok: false, msg: '请输入有效星币数' };
     const key = this.keys[(keyStr || '').trim().toUpperCase()];
     if (!key) return { ok: false, msg: '用户密钥不存在' };
     if (cur.role === 'regular') {
       const dk = cur.email + '@' + todayStr();
       const used = this.daily[dk] || 0;
       if (used + amount > RULES.DAILY_ADMIN_LIMIT) {
-        return { ok: false, msg: `今日充值已达上限（剩余 ${RULES.DAILY_ADMIN_LIMIT - used} 银币）` };
+        return { ok: false, msg: `今日充值已达上限（剩余 ${RULES.DAILY_ADMIN_LIMIT - used} 星币）` };
       }
       this.daily[dk] = used + amount;
     }
-    key.silver = (key.silver || 0) + amount;
-    key.logs.push({ t: Date.now(), type: 'recharge', text: `充值 ${amount} 银币`, delta: amount });
+    key.stars = (key.stars || 0) + amount;
+    key.logs.push({ t: Date.now(), type: 'recharge', text: `充值 ${amount} 星币`, delta: amount });
     LS.set('pj_keys', this.keys);
     LS.set('pj_daily', this.daily);
     return {
       ok: true,
       stars: key.stars,
-      silver: key.silver,
       left: cur.role === 'regular' ? RULES.DAILY_ADMIN_LIMIT - (this.daily[cur.email + '@' + todayStr()] || 0) : null,
     };
   }
-  // 用户：把银币兑换为星币（1:1）
-  async convert(k, amount) {
-    k = (k || '').trim().toUpperCase();
-    const key = this.keys[k];
-    if (!key) return { ok: false, msg: '密钥失效' };
-    amount = Math.floor(Number(amount));
-    if (!amount || amount <= 0) return { ok: false, msg: '请输入有效数量' };
-    if ((key.silver || 0) < amount) return { ok: false, msg: `银币不足（需 ${amount}，当前 ${key.silver || 0}）` };
-    key.silver -= amount;
-    key.stars += amount;
-    key.logs.push({ t: Date.now(), type: 'convert', text: `银币兑换 ${amount} → 星币`, delta: amount });
-    LS.set('pj_keys', this.keys);
-    return { ok: true, stars: key.stars, silver: key.silver };
-  }
   async userInfo(k) {
     const key = this.keys[(k || '').trim().toUpperCase()];
-    return { stars: key?.stars ?? 0, silver: key?.silver ?? 0 };
+    return { stars: key?.stars ?? 0 };
   }
   async userLogs(k) {
     return (this.keys[(k || '').trim().toUpperCase()]?.logs || []).slice().reverse();
@@ -266,15 +250,11 @@ class CloudflareStore {
   }
   async userCharge(k, cost) {
     const r = await cf('/card/charge', { method: 'POST', body: JSON.stringify({ cost }) });
-    return r.ok ? { ok: true, balance: r.balance, cost: r.cost, silver: r.silver ?? 0 } : { ok: false, msg: r.msg };
+    return r.ok ? { ok: true, balance: r.balance, cost: r.cost } : { ok: false, msg: r.msg };
   }
   async userInfo() {
     const r = await cf('/card');
-    return r.ok ? { stars: r.stars ?? 0, silver: r.silver ?? 0 } : { stars: 0, silver: 0 };
-  }
-  async convert(amount) {
-    const r = await cf('/card/convert', { method: 'POST', body: JSON.stringify({ amount }) });
-    return r.ok ? { ok: true, stars: r.stars, silver: r.silver } : { ok: false, msg: r.msg };
+    return r.ok ? { stars: r.stars ?? 0 } : { stars: 0 };
   }
   async userLogs(k) {
     const r = await cf('/card');
@@ -307,7 +287,7 @@ class CloudflareStore {
   }
   async recharge(keyStr, amount) {
     const r = await cf('/admin/recharge', { method: 'POST', body: JSON.stringify({ key: keyStr, amount }) });
-    return r.ok ? { ok: true, stars: r.stars, silver: r.silver, left: r.left ?? null } : { ok: false, msg: r.msg };
+    return r.ok ? { ok: true, stars: r.stars, left: r.left ?? null } : { ok: false, msg: r.msg };
   }
   async regularDaily() {
     const r = await cf('/admin/quota');

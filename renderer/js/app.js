@@ -104,7 +104,7 @@ function renderAdminPanel() {
   </div>
   <div class="container">
     <div class="page-title">管理后台</div>
-    <div class="page-sub">${isSuper ? '全部管控权限：新建管理员、管理所有用户密钥、充值' : '权限：仅可为用户密钥充值银币（每日上限 ' + RULES.DAILY_ADMIN_LIMIT + ' 银币）'}</div>
+    <div class="page-sub">${isSuper ? '全部管控权限：新建管理员、管理所有用户密钥、充值' : '权限：仅可为用户密钥充值星币（每日上限 ' + RULES.DAILY_ADMIN_LIMIT + ' 星币）'}</div>
     <div id="dailyCard"></div>
     <div id="superCards"></div>
     <div class="glass card">
@@ -150,22 +150,22 @@ function renderAdminPanel() {
       <div class="glass card" style="border-color:rgba(255,206,91,.4)">
         <div style="display:flex; justify-content:space-between; align-items:center">
           <div><div class="page-title" style="font-size:15px;margin:0">今日充值额度</div>
-          <div class="hint" style="margin:2px 0 0">每日上限 ${RULES.DAILY_ADMIN_LIMIT} 银币，跨自然日自动重置</div></div>
+          <div class="hint" style="margin:2px 0 0">每日上限 ${RULES.DAILY_ADMIN_LIMIT} 星币，跨自然日自动重置</div></div>
           <div style="font-size:26px; font-weight:800; color:var(--gold)">剩余 <span id="leftNum">${d.left}</span> / ${RULES.DAILY_ADMIN_LIMIT}</div>
         </div>
       </div>
       <div class="glass card">
-        <div class="page-title" style="font-size:15px;margin:0">为用户密钥充值银币</div>
+        <div class="page-title" style="font-size:15px;margin:0">为用户密钥充值星币</div>
         <div class="grid cols3" style="align-items:end; margin-top:10px">
           <div class="field" style="margin:0"><label>用户密钥</label><input id="rkKey" placeholder="粘贴用户密钥 PJ-..."></div>
-          <div class="field" style="margin:0"><label>充值银币数量</label><input id="rkAmt" type="number" min="1" placeholder="如 100"></div>
-          <div><button class="btn gold" id="rkBtn" style="width:100%">确认充值银币</button></div>
+          <div class="field" style="margin:0"><label>充值星币数量</label><input id="rkAmt" type="number" min="1" placeholder="如 100"></div>
+          <div><button class="btn gold" id="rkBtn" style="width:100%">确认充值星币</button></div>
         </div>
       </div>`;
       $('#rkBtn').onclick = async () => {
         const r = await Store.recharge($('#rkKey').value, $('#rkAmt').value);
         if (!r.ok) { toast(r.msg, 'err'); return; }
-        toast(`充值成功 · 银币 ${r.silver} · 星币 ★ ${r.stars}`, 'ok');
+        toast(`充值成功 · 星币 ★ ${r.stars}`, 'ok');
         $('#rkKey').value = ''; $('#rkAmt').value = '';
         if (r.left != null) { const n = $('#leftNum'); if (n) n.textContent = r.left; }
       };
@@ -180,12 +180,11 @@ function renderKeyList() {
     const el = $('#keyList');
     if (!list.length) { el.innerHTML = `<div class="empty">暂无用户密钥。</div>`; return; }
     el.innerHTML = `<table>
-      <thead><tr><th>密钥</th><th>备注</th><th>星币余额</th><th>银币余额</th><th>创建者</th><th>操作</th></tr></thead>
+      <thead><tr><th>密钥</th><th>备注</th><th>星币余额</th><th>创建者</th><th>操作</th></tr></thead>
       <tbody>${list.map(k => `<tr>
         <td class="mono">${esc(k.key)}</td>
         <td>${esc(k.note || '-')}</td>
         <td class="stars-num">★ ${k.stars}</td>
-        <td class="silver-num">⬜ ${k.silver ?? 0}</td>
         <td style="color:var(--muted)">${esc(k.createdBy || '-')}</td>
         <td>
           <button class="btn gold sm" data-recharge="${esc(k.key)}">充值星币</button>
@@ -219,9 +218,9 @@ function showRecharge(key) {
   const m = document.createElement('div'); m.className = 'mask';
   const me = Store.adminSession();
   m.innerHTML = `<div class="glass modal">
-    <h3>充值银币</h3>
-    <div class="hint">密钥 <span class="mono">${esc(mask(key))}</span> · 充值单位为【银币】，用户可 1:1 兑换为星币</div>
-    <div class="field"><label>充值银币数量</label><input id="starInput" type="number" min="1" placeholder="如 100"></div>
+    <h3>充值星币</h3>
+    <div class="hint">密钥 <span class="mono">${esc(mask(key))}</span> · 充值单位为【星币】，直接入账星币余额</div>
+    <div class="field"><label>充值星币数量</label><input id="starInput" type="number" min="1" placeholder="如 100"></div>
     <div class="row" style="display:flex; gap:8px; margin-bottom:6px">${[100, 200, 300, 500].map(v => `<button class="btn sm" data-q="${v}">${v}</button>`).join('')}</div>
     <div class="row" style="display:flex; gap:10px; justify-content:flex-end; margin-top:14px">
       <button class="btn ghost" id="cancelR">取消</button><button class="btn gold" id="doR">确认充值</button>
@@ -234,7 +233,7 @@ function showRecharge(key) {
   $('#doR', m).onclick = async () => {
     const r = await Store.recharge(key, input.value);
     if (!r.ok) { toast(r.msg, 'err'); return; }
-    toast(`充值成功 · 银币 ${r.silver} · 星币 ★ ${r.stars}`, 'ok');
+    toast(`充值成功 · 星币 ★ ${r.stars}`, 'ok');
     m.remove(); renderKeyList();
     if (me.role !== 'super' && r.left != null) { const n = $('#leftNum'); if (n) n.textContent = r.left; }
   };
@@ -258,35 +257,6 @@ function showLogs(key) {
     document.body.appendChild(m);
     $('#closeL', m).onclick = () => m.remove();
     m.addEventListener('click', e => { if (e.target === m) m.remove(); });
-  });
-}
-
-/* ===================== 兑换银币 → 星币 ===================== */
-function showConvert(key) {
-  const m = document.createElement('div'); m.className = 'mask';
-  document.body.appendChild(m);
-  Store.userInfo(key).then(info => {
-    const silver = info.silver ?? 0;
-    m.innerHTML = `<div class="glass modal">
-      <h3>兑换银币 → 星币</h3>
-      <div class="hint">当前银币 <b style="color:var(--silver)">${silver}</b> · 兑换比例 1:1（${silver} 银币 = ${silver} 星币）</div>
-      <div class="field"><label>兑换数量（银币）</label><input id="convInput" type="number" min="1" max="${silver}" placeholder="如 50"></div>
-      <div class="row" style="display:flex; gap:8px; margin-bottom:6px">${[10, 50, 100].map(v => `<button class="btn sm" data-q="${v}" ${v > silver ? 'disabled' : ''}>${v}</button>`).join('')}</div>
-      <div class="row" style="display:flex; gap:10px; justify-content:flex-end; margin-top:14px">
-        <button class="btn ghost" id="cancelC">取消</button><button class="btn gold" id="doC">确认兑换</button>
-      </div></div>`;
-    const input = $('#convInput', m); input.focus();
-    m.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { input.value = b.dataset.q; });
-    $('#cancelC', m).onclick = () => m.remove();
-    m.addEventListener('click', e => { if (e.target === m) m.remove(); });
-    $('#doC', m).onclick = async () => {
-      const r = await Store.convert(key, input.value);
-      if (!r.ok) { toast(r.msg, 'err'); return; }
-      toast(`兑换成功 · 星币 ★ ${r.stars} · 银币 ${r.silver}`, 'ok');
-      const si = $('#silver'); if (si) si.textContent = r.silver;
-      const b = $('#balance'); if (b) b.textContent = r.stars;
-      m.remove();
-    };
   });
 }
 
@@ -337,9 +307,7 @@ function renderMain() {
     <div class="brand"><span class="dot"></span> 纯金工坊 · 歌曲生成</div>
     <div class="top-right">
       <span class="keytag mono">${esc(mask(key))}</span>
-      <span class="coin-pill silver"><span class="ic">⬜</span> <span id="silver">…</span> 银币</span>
       <span class="coin-pill"><span class="star">★</span> <span id="balance">…</span> 星币</span>
-      <button class="btn ghost sm" id="convBtn">兑换银币</button>
       <button class="btn ghost sm" id="expBtn">导出流水</button>
       <button class="btn ghost sm" id="logoutBtn">退出登录</button>
     </div>
@@ -371,9 +339,8 @@ function renderMain() {
     </div>
   </div>`;
   $('#logoutBtn').onclick = () => { stop(); Store.userLogout(); location.hash = 'login'; };
-  $('#convBtn').onclick = () => showConvert(key);
   $('#expBtn').onclick = () => exportUserLogs(key);
-  Store.userInfo(key).then(i => { const b = $('#balance'); if (b) b.textContent = i.stars; const s = $('#silver'); if (s) s.textContent = i.silver; });
+  Store.userInfo(key).then(i => { const b = $('#balance'); if (b) b.textContent = i.stars; });
   buildControls(); bindEngine();
 }
 
@@ -449,12 +416,10 @@ async function generate() {
     const r = await Store.userCharge(key, RULES.COST_PER_SONG);
     if (!r.ok) { toast(r.msg, 'err'); return; }
     $('#balance').textContent = r.balance;
-    const si = $('#silver'); if (si && r.silver != null) si.textContent = r.silver;
     const url = URL.createObjectURL(blob), a = document.createElement('a');
     a.href = url; a.download = '纯金工坊_歌曲_' + Date.now() + '.wav'; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1500);
     toast(`生成成功，已扣 ${r.cost} 星币，剩余 ★ ${r.balance}`, 'ok');
-    if (window.StarBurst) window.StarBurst(window.innerWidth / 2, window.innerHeight / 2);
   } catch (e) { toast('生成失败：' + (e.message || e), 'err'); }
   finally { btn.disabled = false; btn.textContent = old; }
 }

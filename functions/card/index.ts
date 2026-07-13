@@ -12,12 +12,12 @@ import {
 export async function onRequestGet({ request, env }: any) {
   const key = getUserKey(request);
   if (!key) return err('未登录');
-  const row = await env.DB.prepare('SELECT key, stars, silver, note, logs FROM keys WHERE key=?')
+  const row = await env.DB.prepare('SELECT key, stars, note, logs FROM keys WHERE key=?')
     .bind(key)
     .first();
   if (!row) return err('密钥失效，请重新登录');
   const logs = JSON.parse(row.logs || '[]');
-  return json({ ok: true, key: row.key, stars: row.stars, silver: row.silver, note: row.note, logs: logs.slice().reverse() });
+  return json({ ok: true, key: row.key, stars: row.stars, note: row.note, logs: logs.slice().reverse() });
 }
 
 export async function onRequestPost({ request, env }: any) {

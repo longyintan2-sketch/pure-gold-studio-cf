@@ -8,7 +8,7 @@ export async function onRequestGet({ request, env, params }: any) {
   if (!admin) return err('请先登录管理后台', 401);
 
   const k = (params.key || '').toUpperCase();
-  const row = await env.DB.prepare('SELECT key, stars, silver, note, created_by, created_at, logs FROM keys WHERE key=?')
+  const row = await env.DB.prepare('SELECT key, stars, note, created_by, created_at, logs FROM keys WHERE key=?')
     .bind(k)
     .first();
   if (!row) return err('用户密钥不存在');
@@ -16,7 +16,6 @@ export async function onRequestGet({ request, env, params }: any) {
     ok: true,
     key: row.key,
     stars: row.stars,
-    silver: row.silver,
     note: row.note,
     createdBy: row.created_by,
     createdAt: row.created_at,
