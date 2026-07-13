@@ -15,11 +15,12 @@ export async function onRequestGet({ request, env }: any) {
   if (admin.role !== 'super') return err('仅超级管理员可查看全部密钥', 403);
 
   const rows = await env.DB.prepare(
-    'SELECT key, stars, note, created_by, created_at, logs FROM keys ORDER BY created_at DESC',
+    'SELECT key, stars, silver, note, created_by, created_at, logs FROM keys ORDER BY created_at DESC',
   ).all();
   const list = (rows.results || []).map((r: any) => ({
     key: r.key,
     stars: r.stars,
+    silver: r.silver,
     note: r.note,
     createdBy: r.created_by,
     createdAt: r.created_at,
@@ -50,9 +51,9 @@ export async function onRequestPost({ request, env }: any) {
     },
   ];
   await env.DB.prepare(
-    'INSERT INTO keys (key, stars, note, created_by, created_at, logs) VALUES (?,?,?,?,?,?)',
+    'INSERT INTO keys (key, stars, silver, note, created_by, created_at, logs) VALUES (?,?,?,?,?,?,?)',
   )
-    .bind(k, RULES.GIFT_ON_CREATE, note || '', admin.email, Date.now(), JSON.stringify(logs))
+    .bind(k, RULES.GIFT_ON_CREATE, 0, note || '', admin.email, Date.now(), JSON.stringify(logs))
     .run();
   return json({ ok: true, key: k, stars: RULES.GIFT_ON_CREATE });
 }

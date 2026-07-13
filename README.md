@@ -7,9 +7,11 @@
 ## 功能与规则
 
 - 用户凭**密钥**登录；每成功生成 1 首歌曲 **扣 10 星币**；新建用户密钥 **默认赠 100 星币**。
+- **双币种**：消费用【星币】，充值单位为【银币】。管理员为用户密钥**充值银币**，用户可在主界面将银币 **1:1 兑换为星币**。
 - **管理登录**入口在用户登录页底部。
 - 超级管理员 `1766479115@qq.com`：可新建普通管理员、管控全部用户密钥、查看流水、充值。
-- 普通管理员：仅可为用户密钥充值星币；**每日充值上限 500 星币（服务端强制）**。
+- 普通管理员：仅可为用户密钥充值银币；**每日充值上限 500 银币（服务端强制）**。
+- 流水导出：用户可导出自己的流水；管理员可一键导出全部密钥流水（CSV，含 BOM 适配 Excel）。
 - 用户登录界面**不展示任何结算规则文字**。
 - 全部页面（登录 / 管理登录 / 主界面）均启用动态星空 + 流星 + 点击打铁花特效。
 
@@ -67,8 +69,10 @@ npx wrangler d1 create pure-gold-db
 ### 3. 建表 + 设会话密钥 + 初始化超级管理员
 
 ```bash
-# 建表
+# 建表（首次部署）
 npx wrangler d1 execute pure-gold-db --file=./schema.sql --remote
+# 若 D1 已存在旧表、缺少 silver 列，补一列即可（不影响现有数据）：
+npx wrangler d1 execute pure-gold-db --remote --command="ALTER TABLE keys ADD COLUMN silver INTEGER NOT NULL DEFAULT 0"
 
 # 设置会话签名密钥（任意随机串，用于签名管理员 Cookie）
 npx wrangler pages secret put SECRET --project-name pure-gold-studio
@@ -98,6 +102,7 @@ npx wrangler pages deploy renderer --project-name pure-gold-studio
 | POST | `/card` | 用户密钥登录 | 公开 |
 | GET  | `/card` | 当前密钥信息 | 用户 |
 | POST | `/card/charge` | 生成扣费（-10） | 用户 |
+| POST | `/card/convert` | 银币兑换星币（1:1） | 用户 |
 | POST | `/card/logout` | 退出 | 用户 |
 | POST | `/admin/login` | 管理员登录 | 公开 |
 | GET  | `/admin/me` | 当前管理员 | 管理员 |
@@ -105,7 +110,7 @@ npx wrangler pages deploy renderer --project-name pure-gold-studio
 | GET  | `/admin/cards` | 全部密钥列表 | 超级管理员 |
 | POST | `/admin/cards` | 新建用户密钥（赠100） | 超级管理员 |
 | GET/DELETE | `/admin/cards/:key` | 密钥详情/流水、删除 | 管理员/超级 |
-| POST | `/admin/recharge` | 充值星币（每日500限） | 管理员 |
+| POST | `/admin/recharge` | 充值银币（每日500限） | 管理员 |
 | GET/POST | `/admin/admins` | 管理员列表/新建 | 超级管理员 |
 | DELETE | `/admin/admins/:id` | 删除管理员 | 超级管理员 |
 

@@ -68,6 +68,8 @@ a{color:var(--accent); text-decoration:none}
   background:rgba(255,206,91,.12); border:1px solid rgba(255,206,91,.35); font-weight:700;
 }
 .coin-pill .star{color:var(--gold); font-size:16px}
+.coin-pill.silver{background:rgba(207,224,255,.1); border-color:rgba(207,224,255,.4)}
+.coin-pill.silver .ic{color:var(--silver); font-size:15px}
 .keytag{font-size:12px; color:var(--muted); font-family:ui-monospace,monospace}
 
 /* ---------- 布局 ---------- */

@@ -3,7 +3,8 @@
 
 CREATE TABLE IF NOT EXISTS keys (
   key         TEXT PRIMARY KEY,
-  stars       INTEGER NOT NULL DEFAULT 0,
+  stars       INTEGER NOT NULL DEFAULT 0,  -- 星币（消费用）
+  silver      INTEGER NOT NULL DEFAULT 0,  -- 银币（充值单位）
   note        TEXT DEFAULT '',
   created_by  TEXT,
   created_at  INTEGER NOT NULL,
