@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>纯金工坊 · Vocal Star Studio</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <!-- 星空特效层由 starfield.js 注入到 body 最底层，所有页面共用 -->
+  <div id="app"></div>
+
+  <!-- 全局星空/流星/点击打铁花特效（非模块，最先加载） -->
+  <script src="js/starfield.js"></script>
+  <!-- 主程序（ES 模块） -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
