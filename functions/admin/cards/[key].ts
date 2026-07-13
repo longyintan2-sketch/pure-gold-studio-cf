@@ -1,6 +1,6 @@
 // GET    /admin/cards/:key  —— 查看单个密钥信息 + 流水（管理员均可）
 // DELETE /admin/cards/:key  —— 超级管理员：删除密钥
-import { getAdmin, json, err } from '../_lib/auth';
+import { getAdmin, json, err } from '../../_lib/auth';
 
 export async function onRequestGet({ request, env, params }: any) {
   const secret = env.SECRET || 'dev-secret-change-me';

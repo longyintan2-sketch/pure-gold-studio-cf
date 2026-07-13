@@ -1,5 +1,5 @@
 // DELETE /admin/admins/:id —— 超级管理员：删除某普通管理员（不能删自己/超级管理员）
-import { getAdmin, json, err, SUPER_ADMIN } from '../_lib/auth';
+import { getAdmin, json, err, SUPER_ADMIN } from '../../_lib/auth';
 
 export async function onRequestDelete({ request, env, params }: any) {
   const secret = env.SECRET || 'dev-secret-change-me';

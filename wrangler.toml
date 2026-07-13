@@ -6,7 +6,7 @@ compatibility_date = "2024-09-23"
 [[d1_databases]]
 binding = "DB"
 database_name = "pure-gold-db"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "1b53011c-2c80-45eb-bd73-020a22395b9c"
 
 # 注意：SECRET（用于签名管理员会话 Cookie）请用命令设置，不要写进此文件：
 #   npx wrangler pages secret put SECRET --project-name pure-gold-studio
